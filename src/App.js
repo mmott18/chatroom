@@ -1,12 +1,16 @@
-var express = require('express');
-var app = express();
-const io = require('socket.io')(443);
+const http = require('http')
+const express = require('express');
+const socketIo = require('socket.io')
+const PORT = process.env.PORT || 3000
 
-app.listen(8080);
+const app = express();
+
+const server = http.createServer(app)
+const io = socketIo(server)
 
 // routing
 app.get('/', function (req, res) {
-  res.sendfile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/index.html');
 });
 
 // usernames which are currently connected to the chat
@@ -44,3 +48,5 @@ io.sockets.on('connection', function (socket) {
 		socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
 	});
 });
+
+server.listen(PORT, () => console.log(`Listening on Port ${PORT}`))
